@@ -22,8 +22,9 @@ class Weather_API {
             return [
                 'city'      => $data['name'],
                 'temp'      => $data['main']['temp'],
-                'icon'      => 'https://openweathermap.org/img/wn/' . $data['weather'][0]['icon'] . '@2x.png',
+                'icon'      => 'https://openweathermap.org/img/wn/' . $data['weather'][0]['icon'] . '@4x.png',
                 'description' => $data['weather'][0]['description'],
+                'time'        => date( 'Y-m-d H:i', $data['dt'] ), // Convert UNIX timestamp to readable time
             ];
         }
 

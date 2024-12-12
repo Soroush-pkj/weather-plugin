@@ -14,7 +14,8 @@
 }
 
 .weather-city img {
-    max-width: 50px;
+    min-width: 100px;
+    max-width: 120px;
     margin-bottom: 10px;
 }
 

@@ -11,7 +11,7 @@ class Weather_View {
 
     // Shortcode to display weather for the cities
     public function get_weather_shortcode() {
-        $cities = ['Tehran', 'New York', 'Sydney'];
+        $cities = ['Tehran', 'New York', 'Paris'];
         $output = '<div class="weather-container">';
 
         foreach ( $cities as $city ) {
@@ -23,6 +23,8 @@ class Weather_View {
                 $output .= '<img src="' . esc_url( $weather_data['icon'] ) . '" alt="Weather icon">';
                 $output .= '<p>Temperature: ' . esc_html( $weather_data['temp'] ) . '°C</p>';
                 $output .= '<p>' . esc_html( $weather_data['description'] ) . '</p>';
+                $output .= '<p>updated: ' . esc_html( $weather_data['time'] ) . '</p>';
+
                 $output .= '</div>';
             } else {
                 $output .= '<p>Weather data not available for ' . esc_html( $city ) . '.</p>';
