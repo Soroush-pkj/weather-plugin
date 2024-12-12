@@ -2,11 +2,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.querySelector('#weather-search');
     const resultsContainer = document.querySelector('#search-results');
     const selectedCitiesContainer = document.querySelector('#selected-cities');
+    const submitButton = document.querySelector('#submit-cities');
+    const newWeatherCitiesContainer = document.querySelector('#new-weather-cities');
     const maxCities = 5;
 
     let selectedCities = [];
 
-    // Fetch city suggestions from the API
+    // جستجوی شهرها از API
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.trim();
 
@@ -32,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 selectedCity.classList.add('selected-city');
                                 selectedCitiesContainer.appendChild(selectedCity);
 
-                                // Remove city from results
+                                // پاک کردن نتایج جستجو
                                 resultsContainer.innerHTML = '';
                                 searchInput.value = '';
                             } else {
@@ -46,59 +48,48 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => console.error('Error fetching cities:', error));
     });
-});
 
-
-
-
-jQuery(document).ready(function ($) {
-    let selectedCities = []; // لیست شهرهای انتخاب‌شده
-
-    // افزودن شهر به لیست
-    $('#weather-add-city').on('click', function (e) {
+    // ارسال شهرهای انتخاب‌شده به سرور
+    submitButton.addEventListener('click', function (e) {
         e.preventDefault();
-        const city = $('#weather-search').val().trim();
-        if (city && selectedCities.length < 5 && !selectedCities.includes(city)) {
-            selectedCities.push(city);
-            $('#selected-cities').append(`<li>${city}</li>`);
-            $('#weather-search').val(''); // پاک کردن فیلد ورودی
-        }
-    });
 
-    // ارسال شهرهای انتخاب‌شده
-    $('#submit-cities').on('click', function (e) {
-        e.preventDefault();
         if (selectedCities.length > 0) {
-            $.ajax({
-                url: weatherSearch.ajax_url,
+            fetch(weatherSearch.ajax_url, {
                 method: 'POST',
-                data: {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
                     action: 'weather_update_cities',
-                    selected_cities: selectedCities,
-                },
-                success: function (response) {
-                    if (response.success && response.data) {
-                        const newCities = response.data;
-                        $('#new-weather-cities').empty(); // پاک کردن نتایج قبلی
+                    selected_cities: JSON.stringify(selectedCities),
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const newCities = data.data;
+                        newWeatherCitiesContainer.innerHTML = ''; // پاک کردن نتایج قبلی
+
                         newCities.forEach(city => {
-                            $('#new-weather-cities').append(`
-                                <div class="weather-city">
-                                    <h3>${city.city}</h3>
-                                    <img src="${city.icon}" alt="Weather icon">
-                                    <p>Temperature: ${city.temp}°C</p>
-                                    <p>${city.description}</p>
-                                </div>
-                            `);
+                            const cityDiv = document.createElement('div');
+                            cityDiv.classList.add('weather-city');
+
+                            cityDiv.innerHTML = `
+                                <h3>${city.city}</h3>
+                                <img src="${city.icon}" alt="Weather icon">
+                                <p>Temperature: ${city.temp}°C</p>
+                                <p>${city.description}</p>
+                            `;
+                            newWeatherCitiesContainer.appendChild(cityDiv);
                         });
-                        selectedCities = []; // پاک کردن لیست شهرها
-                        $('#selected-cities').empty();
+
+                        selectedCities = []; // ریست کردن لیست
+                        selectedCitiesContainer.innerHTML = '';
                     }
-                },
-                error: function () {
-                    alert('Failed to fetch weather data. Please try again.');
-                },
-            });
+                })
+                .catch(() => alert('Failed to fetch weather data. Please try again.'));
+        } else {
+            alert('Please select at least one city.');
         }
     });
 });
-

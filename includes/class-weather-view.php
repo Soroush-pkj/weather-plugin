@@ -13,7 +13,7 @@ class Weather_View
 
     // Shortcode to display weather for the cities
     public function get_weather_shortcode() {
-        $cities = ['Tehran', 'New York', 'Sydney']; // شهرهای پیش‌فرض
+        $cities = ['Tehran', 'New York', 'Sydney'];
         $output = '<div class="weather-container">';
     
         foreach ( $cities as $city ) {
@@ -26,25 +26,22 @@ class Weather_View
                 $output .= '<p>Temperature: ' . esc_html( $weather_data['temp'] ) . '°C</p>';
                 $output .= '<p>' . esc_html( $weather_data['description'] ) . '</p>';
                 $output .= '</div>';
-            } else {
-                $output .= '<p>Weather data not available for ' . esc_html( $city ) . '.</p>';
             }
         }
     
         $output .= '</div>';
-    
-        // فرم انتخاب شهر
         $output .= '
             <div class="weather-search-container">
-                <input type="text" id="weather-search" placeholder="Search cities..." />
-                <button id="weather-add-city">Add City</button>
-                <ul id="selected-cities"></ul>
+                <input type="text" id="weather-search" placeholder="Search cities...">
+                <div id="search-results"></div>
+                <div id="selected-cities"></div>
+                <button id="submit-cities">Submit</button>
             </div>
-            <button id="submit-cities">Submit</button>
             <div id="new-weather-cities"></div>
         ';
     
         return $output;
     }
+    
     
 }

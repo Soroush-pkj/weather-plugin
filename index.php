@@ -45,8 +45,8 @@ add_shortcode( 'weather', 'weather_plugin_register_shortcode' );
 
 // Add AJAX handler for selected cities
 function weather_update_cities() {
-    $selected_cities = isset( $_POST['selected_cities'] ) ? array_map( 'sanitize_text_field', $_POST['selected_cities'] ) : [];
-    $weather_api = new Weather_API(); // نمونه‌سازی کلاس API
+    $selected_cities = isset( $_POST['selected_cities'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true ) : [];
+    $weather_api = new Weather_API();
     $new_weather_data = [];
 
     foreach ( $selected_cities as $city ) {
@@ -62,6 +62,7 @@ function weather_update_cities() {
         wp_send_json_error( 'No weather data found for selected cities.' );
     }
 }
+
 add_action( 'wp_ajax_weather_update_cities', 'weather_update_cities' );
 add_action( 'wp_ajax_nopriv_weather_update_cities', 'weather_update_cities' );
 
