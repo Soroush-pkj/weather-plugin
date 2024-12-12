@@ -6,27 +6,63 @@ Version: 1.0
 Author: Soroush Paknezhad
 */
 
-
-
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
 // Include necessary classes
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-api.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-view.php';
-
-// Enqueue styles
-function weather_plugin_enqueue_styles() {
-    wp_enqueue_style( 'weather-style', plugin_dir_url( __FILE__ ) . 'assets/css/weather-style.css' );
+if ( ! class_exists( 'Weather_API' ) ) {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-api.php';
 }
-add_action( 'wp_enqueue_scripts', 'weather_plugin_enqueue_styles' );
+
+if ( ! class_exists( 'Weather_View' ) ) {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-view.php';
+}
+
+// Enqueue styles and scripts
+function weather_plugin_enqueue_assets() {
+    // Enqueue CSS
+    wp_enqueue_style( 'weather-style', plugin_dir_url( __FILE__ ) . 'assets/css/weather-style.css' );
+
+    // Enqueue JS
+    wp_enqueue_script( 'weather-search', plugin_dir_url( __FILE__ ) . 'assets/js/weather-search.js', [ 'jquery' ], null, true );
+
+    // Localize script for AJAX URL
+    wp_localize_script( 'weather-search', 'weatherSearch', [
+        'ajax_url' => admin_url( 'admin-ajax.php' ),
+    ] );
+}
+add_action( 'wp_enqueue_scripts', 'weather_plugin_enqueue_assets' );
 
 // Register the [weather] shortcode
 function weather_plugin_register_shortcode() {
-    $weather_api = new Weather_API();
-    $weather_view = new Weather_View( $weather_api );
+    $weather_api = new Weather_API(); // Initialize Weather API
+    $weather_view = new Weather_View( $weather_api ); // Initialize Weather View with API
     return $weather_view->get_weather_shortcode();
 }
 add_shortcode( 'weather', 'weather_plugin_register_shortcode' );
+
+// Add AJAX handler for selected cities
+function weather_update_cities() {
+    $selected_cities = isset( $_POST['selected_cities'] ) ? array_map( 'sanitize_text_field', $_POST['selected_cities'] ) : [];
+    $weather_api = new Weather_API(); // نمونه‌سازی کلاس API
+    $new_weather_data = [];
+
+    foreach ( $selected_cities as $city ) {
+        $weather_data = $weather_api->get_weather_data( $city );
+        if ( $weather_data ) {
+            $new_weather_data[] = $weather_data;
+        }
+    }
+
+    if ( ! empty( $new_weather_data ) ) {
+        wp_send_json_success( $new_weather_data );
+    } else {
+        wp_send_json_error( 'No weather data found for selected cities.' );
+    }
+}
+add_action( 'wp_ajax_weather_update_cities', 'weather_update_cities' );
+add_action( 'wp_ajax_nopriv_weather_update_cities', 'weather_update_cities' );
+
+

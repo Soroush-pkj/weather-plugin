@@ -23,3 +23,74 @@
     font-size: 1.1em;
     margin: 5px 0;
 }
+
+
+
+
+/* search box */
+#city-search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#search-results {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.city-item {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.city-item:hover {
+    background-color: #f0f0f0;
+}
+
+#selected-cities {
+    margin-top: 10px;
+}
+
+.selected-city {
+    padding: 5px;
+    background-color: #e0f7fa;
+    margin: 5px 0;
+}
+
+
+/* weather update cities */
+
+.weather-search-container {
+    margin: 20px 0;
+}
+
+#selected-cities {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+#selected-cities li {
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    margin: 5px 0;
+    border-radius: 3px;
+}
+
+#submit-cities {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0073aa;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#submit-cities:hover {
+    background-color: #005f8d;
+}
+
