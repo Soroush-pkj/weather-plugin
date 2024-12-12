@@ -13,9 +13,23 @@ class Weather_View
 
     // Shortcode to display weather for the cities
     public function get_weather_shortcode() {
-        $cities = ['Tehran', 'New York', 'Sydney'];
+        // لیست پیش‌فرض شهرها
+        $default_cities = ['Tehran', 'New York', 'Sydney'];
+        $cities = [];
+    
+        // اگر شهری از طرف کاربر ارسال شده باشد
+        if ( isset( $_POST['selected_cities'] ) && ! empty( $_POST['selected_cities'] ) ) {
+            $cities = json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true );
+        }
+    
+        // اگر هیچ شهری از طرف کاربر انتخاب نشده باشد، از شهرهای پیش‌فرض استفاده می‌کنیم
+        if ( empty( $cities ) ) {
+            $cities = $default_cities;
+        }
+    
         $output = '<div class="weather-container">';
     
+        // دریافت اطلاعات وضعیت آب و هوا برای هر شهر
         foreach ( $cities as $city ) {
             $weather_data = $this->weather_api->get_weather_data( $city );
     
@@ -30,6 +44,8 @@ class Weather_View
         }
     
         $output .= '</div>';
+    
+        // فرم جستجوی شهر
         $output .= '
             <div class="weather-search-container">
                 <input type="text" id="weather-search" placeholder="Search cities...">
@@ -37,11 +53,11 @@ class Weather_View
                 <div id="selected-cities"></div>
                 <button id="submit-cities">Submit</button>
             </div>
-            <div id="new-weather-cities"></div>
         ';
     
         return $output;
     }
+    
     
     
 }

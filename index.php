@@ -45,7 +45,14 @@ add_shortcode( 'weather', 'weather_plugin_register_shortcode' );
 
 // Add AJAX handler for selected cities
 function weather_update_cities() {
+    // دریافت شهرهای انتخابی از درخواست POST
     $selected_cities = isset( $_POST['selected_cities'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true ) : [];
+    
+    // اگر هیچ شهری انتخاب نشده باشد، از شهرهای پیش‌فرض استفاده می‌کنیم
+    if ( empty( $selected_cities ) ) {
+        $selected_cities = ['Tehran', 'New York', 'Sydney'];
+    }
+
     $weather_api = new Weather_API();
     $new_weather_data = [];
 
@@ -62,6 +69,7 @@ function weather_update_cities() {
         wp_send_json_error( 'No weather data found for selected cities.' );
     }
 }
+
 
 add_action( 'wp_ajax_weather_update_cities', 'weather_update_cities' );
 add_action( 'wp_ajax_nopriv_weather_update_cities', 'weather_update_cities' );

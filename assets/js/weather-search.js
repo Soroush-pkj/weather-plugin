@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultsContainer = document.querySelector('#search-results');
     const selectedCitiesContainer = document.querySelector('#selected-cities');
     const submitButton = document.querySelector('#submit-cities');
-    const newWeatherCitiesContainer = document.querySelector('#new-weather-cities');
+    const weatherContainer = document.querySelector('.weather-container');
     const maxCities = 5;
 
     let selectedCities = [];
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success && data.data) {
                         const newCities = data.data;
-                        newWeatherCitiesContainer.innerHTML = ''; // پاک کردن نتایج قبلی
+                        weatherContainer.innerHTML = ''; // پاک کردن نتایج قبلی
 
                         newCities.forEach(city => {
                             const cityDiv = document.createElement('div');
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <p>Temperature: ${city.temp}°C</p>
                                 <p>${city.description}</p>
                             `;
-                            newWeatherCitiesContainer.appendChild(cityDiv);
+                            weatherContainer.appendChild(cityDiv);
                         });
 
                         selectedCities = []; // ریست کردن لیست
