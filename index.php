@@ -27,6 +27,10 @@ if ( ! class_exists( 'Weather_Cache' ) ) {
 if ( ! class_exists( 'Weather_View' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-view.php';
 }
+if ( ! class_exists( 'Weather_Cron' ) ) {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-weather-cron.php';
+
+}
 
 // Enqueue styles and scripts
 function weather_plugin_enqueue_assets() {
