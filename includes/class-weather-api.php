@@ -1,33 +1,48 @@
 <?php
 
 class Weather_API {
+    private $weather_cache;
 
-    private $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
-    private $base_url = 'https://api.openweathermap.org/data/2.5/weather';
+    public function __construct() {
+        // سازنده کلاس کش
+        $this->weather_cache = new Weather_Cache();
+    }
 
-    // Fetch weather data for a city
-    public function get_weather_data( $city ) {
-        $url = $this->base_url . '?q=' . urlencode( $city ) . '&appid=' . $this->api_key . '&units=metric&lang=en';
-        
+    // دریافت وضعیت آب و هوا برای یک شهر
+    public function get_weather_data( $city_name ) {
+        // اول بررسی می‌کنیم که آیا داده‌ها در کش موجود است
+        $cached_data = $this->weather_cache->get_cached_weather_data( $city_name );
+
+        if ( false !== $cached_data ) {
+            return $cached_data;
+        }
+
+        // اگر داده‌ها در کش موجود نبود، از API دریافت می‌کنیم
+        $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
+        $url = 'https://api.openweathermap.org/data/2.5/weather?q=' . urlencode( $city_name ) . '&appid=' . $api_key . '&units=metric';
+
         $response = wp_remote_get( $url );
-        
         if ( is_wp_error( $response ) ) {
-            return null;
+            return false;
         }
 
-        $body = wp_remote_retrieve_body( $response );
-        $data = json_decode( $body, true );
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
 
+        // اگر داده‌ها از API به‌درستی دریافت شد، آن‌ها را در کش ذخیره می‌کنیم
         if ( isset( $data['main'] ) ) {
-            return [
-                'city'      => $data['name'],
-                'temp'      => $data['main']['temp'],
-                'icon'      => 'https://openweathermap.org/img/wn/' . $data['weather'][0]['icon'] . '@4x.png',
-                'description' => $data['weather'][0]['description'],
-                'time'        => date( 'Y-m-d H:i', $data['dt'] ), // Convert UNIX timestamp to readable time
+            $weather_data = [
+                'city'       => $data['name'],
+                'temp'       => $data['main']['temp'],
+                'icon'       => 'https://openweathermap.org/img/wn/' . $data['weather'][0]['icon'] . '@2x.png',
+                'description'=> $data['weather'][0]['description'],
             ];
+
+            // ذخیره داده‌ها در کش
+            $this->weather_cache->set_weather_data_to_cache( $city_name, $weather_data );
+
+            return $weather_data;
         }
 
-        return null;
+        return false;
     }
 }

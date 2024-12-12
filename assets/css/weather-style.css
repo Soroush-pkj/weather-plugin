@@ -2,11 +2,18 @@
     display: flex;
     justify-content: space-around;
     margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .weather-city {
     text-align: center;
-    width: 30%;
+    width: 248px;
+    background-color: #cccccc81;
+    border-radius: 8px;
+    box-shadow: 0dvi;
+    padding: 16px;
+
 }
 
 .weather-city h3 {
@@ -52,6 +59,8 @@
 
 #selected-cities {
     margin-top: 10px;
+    display: flex;
+    gap: 16px;
 }
 
 .selected-city {

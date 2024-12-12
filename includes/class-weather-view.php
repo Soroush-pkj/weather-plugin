@@ -27,8 +27,18 @@ class Weather_View
         if (empty($cities)) {
             $cities = $default_cities;
         }
-
-        $output = '<div class="weather-container">';
+        // فرم جستجوی شهر
+       
+        $output = '<div class="weather-search-container">
+                <input type="text" id="weather-search" placeholder="Search cities...">
+                <div id="search-results"></div>
+                <div id="selected-cities"></div>
+                <button id="submit-cities">Submit</button>
+            </div>
+            <div id="loading-indicator" style="display:none;">
+    <p>Loading...</p>
+</div>
+        <div class="weather-container">';
 
         // دریافت اطلاعات وضعیت آب و هوا برای هر شهر
         foreach ($cities as $city) {
@@ -40,24 +50,14 @@ class Weather_View
                 $output .= '<img src="' . esc_url($weather_data['icon']) . '" alt="Weather icon">';
                 $output .= '<p>Temperature: ' . esc_html($weather_data['temp']) . '°C</p>';
                 $output .= '<p>' . esc_html($weather_data['description']) . '</p>';
-                
+
                 $output .= '</div>';
             }
         }
 
         $output .= '</div>';
 
-        // فرم جستجوی شهر
-        $output .= '
-            <div class="weather-search-container">
-                <input type="text" id="weather-search" placeholder="Search cities...">
-                <div id="search-results"></div>
-                <div id="selected-cities"></div>
-                <button id="submit-cities">Submit</button>
-            </div>
-            <div id="loading-indicator" style="display:none;">
-    <p>Loading...</p>
-</div>';
+
 
         return $output;
     }
