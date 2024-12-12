@@ -15,6 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'Weather_API' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-api.php';
 }
+if ( ! class_exists( 'Weather_Chart' ) ) {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-weather-chart.php';
+}
+
 if ( ! class_exists( 'Weather_Cache' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-cache.php';
 }

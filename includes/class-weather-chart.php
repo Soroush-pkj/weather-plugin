@@ -1,0 +1,138 @@
+<?php
+
+class Weather_Chart {
+
+    private $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
+
+    public function __construct() {
+        add_shortcode('weather-chart', [ $this, 'render_weather_chart' ]);
+        add_action('wp_enqueue_scripts', [ $this, 'enqueue_chart_assets' ]);
+    }
+
+    // Enqueue Chart.js library
+    public function enqueue_chart_assets() {
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], null, true);
+    }
+
+    // Render the weather chart shortcode
+    public function render_weather_chart() {
+        ob_start();
+        ?>
+        <div id="weather-chart-container">
+            <canvas id="weather-chart" width="400" height="200"></canvas>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const apiKey = '<?php echo $this->api_key; ?>';
+
+                function loadChart(cityName) {
+                    // Fetch historical weather data for the city
+                    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(cityName)}&appid=${apiKey}&units=metric`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data || !data.list) {
+                                console.error('Invalid data received from weather API.');
+                                return;
+                            }
+
+                            // Process the data to extract daily temperatures
+                            const temperatures = [];
+                            const labels = [];
+                            const uniqueDays = new Set();
+
+                            data.list.forEach(entry => {
+                                const date = new Date(entry.dt_txt);
+                                const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+                                if (!uniqueDays.has(dayLabel)) {
+                                    uniqueDays.add(dayLabel);
+                                    labels.push(dayLabel);
+                                    temperatures.push(entry.main.temp);
+                                }
+                            });
+
+                            // Limit to the last 5 days
+                            const limitedTemperatures = temperatures.slice(0, 5);
+                            const limitedLabels = labels.slice(0, 5);
+
+                            // Render the chart
+                            const ctx = document.getElementById('weather-chart').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: limitedLabels,
+                                    datasets: [{
+                                        label: `Temperature Trend for ${cityName}`,
+                                        data: limitedTemperatures,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 1,
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                        },
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false,
+                                        },
+                                    },
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Days',
+                                            },
+                                        },
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Temperature (°C)',
+                                            },
+                                            beginAtZero: true,
+                                        },
+                                    },
+                                },
+                            });
+                        })
+                        .catch(error => console.error('Error fetching weather chart data:', error));
+                }
+
+                // Check Local Storage for city names
+                const storedCities = JSON.parse(localStorage.getItem('selected-cities')) || [];
+                let cityName = null;
+
+                if (storedCities.length > 0) {
+                    cityName = storedCities[0];
+                } else {
+                    const firstCityElement = document.querySelector('.weather-city h3');
+                    if (firstCityElement) {
+                        cityName = firstCityElement.textContent.trim();
+                    }
+                }
+
+                if (cityName) {
+                    loadChart(cityName);
+                } else {
+                    console.error('No city found to display weather chart.');
+                }
+
+                // Reload chart on city updates
+                document.getElementById('submit-cities').addEventListener('click', function () {
+                    const updatedCities = JSON.parse(localStorage.getItem('selected-cities')) || [];
+                    if (updatedCities.length > 0) {
+                        loadChart(updatedCities[0]);
+                    }
+                });
+            });
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+}
+
+// Instantiate the Weather_Chart class
+new Weather_Chart();

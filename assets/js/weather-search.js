@@ -163,3 +163,5 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(() => alert('Failed to fetch weather data. Please try again.'));
     }
 });
+
+

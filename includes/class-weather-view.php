@@ -33,7 +33,7 @@ class Weather_View
                 <input type="text" id="weather-search" placeholder="Search cities...">
                 <div id="search-results"></div>
                 <div id="selected-cities"></div>
-                <button id="submit-cities">Submit</button>
+                <button id="submit-cities">Apply</button>
             </div>
             <div id="loading-indicator" style="display:none;">
     <p>Loading...</p>
