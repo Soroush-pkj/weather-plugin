@@ -12,39 +12,41 @@ class Weather_View
     }
 
     // Shortcode to display weather for the cities
-    public function get_weather_shortcode() {
+    public function get_weather_shortcode()
+    {
         // لیست پیش‌فرض شهرها
         $default_cities = ['Tehran', 'New York', 'Sydney'];
         $cities = [];
-    
+
         // اگر شهری از طرف کاربر ارسال شده باشد
-        if ( isset( $_POST['selected_cities'] ) && ! empty( $_POST['selected_cities'] ) ) {
-            $cities = json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true );
+        if (isset($_POST['selected_cities']) && ! empty($_POST['selected_cities'])) {
+            $cities = json_decode(sanitize_text_field(wp_unslash($_POST['selected_cities'])), true);
         }
-    
+
         // اگر هیچ شهری از طرف کاربر انتخاب نشده باشد، از شهرهای پیش‌فرض استفاده می‌کنیم
-        if ( empty( $cities ) ) {
+        if (empty($cities)) {
             $cities = $default_cities;
         }
-    
+
         $output = '<div class="weather-container">';
-    
+
         // دریافت اطلاعات وضعیت آب و هوا برای هر شهر
-        foreach ( $cities as $city ) {
-            $weather_data = $this->weather_api->get_weather_data( $city );
-    
-            if ( $weather_data ) {
+        foreach ($cities as $city) {
+            $weather_data = $this->weather_api->get_weather_data($city);
+
+            if ($weather_data) {
                 $output .= '<div class="weather-city">';
-                $output .= '<h3>' . esc_html( $weather_data['city'] ) . '</h3>';
-                $output .= '<img src="' . esc_url( $weather_data['icon'] ) . '" alt="Weather icon">';
-                $output .= '<p>Temperature: ' . esc_html( $weather_data['temp'] ) . '°C</p>';
-                $output .= '<p>' . esc_html( $weather_data['description'] ) . '</p>';
+                $output .= '<h3>' . esc_html($weather_data['city']) . '</h3>';
+                $output .= '<img src="' . esc_url($weather_data['icon']) . '" alt="Weather icon">';
+                $output .= '<p>Temperature: ' . esc_html($weather_data['temp']) . '°C</p>';
+                $output .= '<p>' . esc_html($weather_data['description']) . '</p>';
+                
                 $output .= '</div>';
             }
         }
-    
+
         $output .= '</div>';
-    
+
         // فرم جستجوی شهر
         $output .= '
             <div class="weather-search-container">
@@ -53,11 +55,10 @@ class Weather_View
                 <div id="selected-cities"></div>
                 <button id="submit-cities">Submit</button>
             </div>
-        ';
-    
+            <div id="loading-indicator" style="display:none;">
+    <p>Loading...</p>
+</div>';
+
         return $output;
     }
-    
-    
-    
 }
