@@ -22,113 +22,130 @@ class Weather_Chart {
             <canvas id="weather-chart" width="400" height="200"></canvas>
         </div>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const apiKey = '<?php echo $this->api_key; ?>';
+document.addEventListener('DOMContentLoaded', function () {
+    const apiKey = '<?php echo $this->api_key; ?>';
+    let chartInstance = null;
 
-                function loadChart(cityName) {
-                    // Fetch historical weather data for the city
-                    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(cityName)}&appid=${apiKey}&units=metric`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (!data || !data.list) {
-                                console.error('Invalid data received from weather API.');
-                                return;
-                            }
-
-                            // Process the data to extract daily temperatures
-                            const temperatures = [];
-                            const labels = [];
-                            const uniqueDays = new Set();
-
-                            data.list.forEach(entry => {
-                                const date = new Date(entry.dt_txt);
-                                const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-                                if (!uniqueDays.has(dayLabel)) {
-                                    uniqueDays.add(dayLabel);
-                                    labels.push(dayLabel);
-                                    temperatures.push(entry.main.temp);
-                                }
-                            });
-
-                            // Limit to the last 5 days
-                            const limitedTemperatures = temperatures.slice(0, 5);
-                            const limitedLabels = labels.slice(0, 5);
-
-                            // Render the chart
-                            const ctx = document.getElementById('weather-chart').getContext('2d');
-                            new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    labels: limitedLabels,
-                                    datasets: [{
-                                        label: `Temperature Trend for ${cityName}`,
-                                        data: limitedTemperatures,
-                                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                        borderColor: 'rgba(75, 192, 192, 1)',
-                                        borderWidth: 1,
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                        },
-                                        tooltip: {
-                                            mode: 'index',
-                                            intersect: false,
-                                        },
-                                    },
-                                    scales: {
-                                        x: {
-                                            title: {
-                                                display: true,
-                                                text: 'Days',
-                                            },
-                                        },
-                                        y: {
-                                            title: {
-                                                display: true,
-                                                text: 'Temperature (°C)',
-                                            },
-                                            beginAtZero: true,
-                                        },
-                                    },
-                                },
-                            });
-                        })
-                        .catch(error => console.error('Error fetching weather chart data:', error));
+    function loadChart(cityName) {
+        // Fetch historical weather data for the city
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(cityName)}&appid=${apiKey}&units=metric`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || !data.list) {
+                    console.error('Invalid data received from weather API.');
+                    return;
                 }
 
-                // Check Local Storage for city names
-                const storedCities = JSON.parse(localStorage.getItem('selected-cities')) || [];
-                let cityName = null;
+                // Process the data to extract daily temperatures
+                const temperatures = [];
+                const labels = [];
+                const uniqueDays = new Set();
 
-                if (storedCities.length > 0) {
-                    cityName = storedCities[0];
-                } else {
-                    const firstCityElement = document.querySelector('.weather-city h3');
-                    if (firstCityElement) {
-                        cityName = firstCityElement.textContent.trim();
-                    }
-                }
+                data.list.forEach(entry => {
+                    const date = new Date(entry.dt_txt);
+                    const dayLabel = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-                if (cityName) {
-                    loadChart(cityName);
-                } else {
-                    console.error('No city found to display weather chart.');
-                }
-
-                // Reload chart on city updates
-                document.getElementById('submit-cities').addEventListener('click', function () {
-                    const updatedCities = JSON.parse(localStorage.getItem('selected-cities')) || [];
-                    if (updatedCities.length > 0) {
-                        loadChart(updatedCities[0]);
+                    if (!uniqueDays.has(dayLabel)) {
+                        uniqueDays.add(dayLabel);
+                        labels.push(dayLabel);
+                        temperatures.push(entry.main.temp);
                     }
                 });
+
+                // Limit to the last 5 days
+                const limitedTemperatures = temperatures.slice(0, 5);
+                const limitedLabels = labels.slice(0, 5);
+
+                // Destroy existing chart instance if it exists
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Render the chart
+                const ctx = document.getElementById('weather-chart').getContext('2d');
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: limitedLabels,
+                        datasets: [{
+                            label: `Temperature Trend for ${cityName}`,
+                            data: limitedTemperatures,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Days',
+                                },
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Temperature (\u00B0C)',
+                                },
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            })
+            .catch(error => console.error('Error fetching weather chart data:', error));
+    }
+
+    // Initialize chart with the first city
+    function initializeChart() {
+        const firstCityElement = document.querySelector('.weather-city h3');
+        if (firstCityElement) {
+            const cityName = firstCityElement.textContent.trim();
+            loadChart(cityName);
+        } else {
+            console.error('No city found to display weather chart.');
+        }
+    }
+
+    // Observe changes in .weather-container
+    const weatherContainer = document.querySelector('.weather-container');
+
+    if (weatherContainer) {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                    const updatedCityElement = document.querySelector('.weather-city h3');
+                    if (updatedCityElement) {
+                        const updatedCityName = updatedCityElement.textContent.trim();
+                        loadChart(updatedCityName);
+                    }
+                }
             });
-        </script>
+        });
+
+        observer.observe(weatherContainer, {
+            childList: true,
+            attributes: true,
+            subtree: true
+        });
+    }
+
+    // Initialize the chart on page load
+    initializeChart();
+});
+</script>
+
         <?php
         return ob_get_clean();
     }
