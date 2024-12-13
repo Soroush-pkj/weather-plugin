@@ -37,13 +37,20 @@ document.addEventListener('DOMContentLoaded', function () {
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.trim();
 
-        if (query.length < 3) return;
+        resultsContainer.style.display = 'block'; // نمایش باکس نتایج جستجو
+
+        if (query.length < 3) {
+            resultsContainer.innerHTML = '<div class="search-message">At least 3 Characters</div>';
+            return;
+        }
+
+        resultsContainer.innerHTML = '<div class="search-message">Searching...</div>';
 
         fetch(`https://api.openweathermap.org/data/2.5/find?q=${query}&appid=4503f87f2a76fb1b5c028df33323cf5c&type=like&units=metric`)
             .then(response => response.json())
             .then(data => {
                 resultsContainer.innerHTML = '';
-                if (data.list) {
+                if (data.list && data.list.length > 0) {
                     data.list.forEach(city => {
                         const cityName = `${city.name}, ${city.sys.country}`;
                         const cityItem = document.createElement('div');
@@ -69,9 +76,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         resultsContainer.appendChild(cityItem);
                     });
+                } else {
+                    resultsContainer.innerHTML = '<div class="search-message">No Result</div>';
                 }
             })
-            .catch(error => console.error('Error fetching cities:', error));
+            .catch(error => {
+                console.error('Error fetching cities:', error);
+                resultsContainer.innerHTML = '<div class="search-message">No Result</div>';
+            });
     });
 
     // ارسال شهرهای انتخاب‌شده به سرور و ذخیره در لوکال استوریج
