@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // مخفی کردن کانتینر وضعیت هوا و نشان دادن اسپینر بارگذاری
     weatherContainer.style.display = 'none';
-    loadingIndicator.style.display = 'flex'; // نشان دادن اسپینر
+    loadingIndicator.style.display = 'block'; // نشان دادن اسپینر
 
     // چک کردن لوکال استوریج برای شهرهای انتخاب‌شده
     if (localStorage.getItem('selected-cities')) {

@@ -61,9 +61,9 @@ function weather_update_cities() {
     $selected_cities = isset( $_POST['selected_cities'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true ) : [];
     
     // اگر هیچ شهری انتخاب نشده باشد، از شهرهای پیش‌فرض استفاده می‌کنیم
-    if ( empty( $selected_cities ) ) {
-        $selected_cities = ['Tehran', 'New York', 'Sydney'];
-    }
+    // if ( empty( $selected_cities ) ) {
+    //     $selected_cities = ['Tehran', 'New York', 'Sydney'];
+    // }
 
     $weather_api = new Weather_API();
     $new_weather_data = [];
