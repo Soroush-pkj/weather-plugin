@@ -79,8 +79,8 @@ class Weather_Chart {
                                 datasets: [{
                                     label: `Temperature Trend for ${cityName}`,
                                     data: limitedTemperatures,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(87, 143, 143, 0.2)',
+                                    borderColor: 'rgb(100, 226, 226)',
                                     borderWidth: 1,
                                 }]
                             },
