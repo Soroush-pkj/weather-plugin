@@ -6,7 +6,14 @@ body {
     background-color: #f9f9f9;
     color: #333;
 }
-
+.input-container{
+    display: flex;
+    gap: 16px;
+}
+.weather-container1{
+    max-width: 500px;
+    margin: 0 auto;
+}
 .weather-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -17,11 +24,13 @@ body {
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .weather-city {
     text-align: center;
-    background-color: #e3f2fd;
+    background-color: #cbdff8;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -43,7 +52,7 @@ body {
     width: 100px;
     height: auto;
     margin-bottom: 15px;
-    background-color: #e3f2fd!important;
+    background-color: #7e888f!important;
     border-radius: 50%!important;
 }
 
@@ -104,17 +113,31 @@ body {
     border-radius: 8px;
     font-size: 1em;
 }
-
-/* Submit Button */
-#submit-cities {
+#clear-localstorage{
     display: inline-block;
-    padding: 12px 24px;
+    line-height: 0px;
+    padding: 6px 12px;
     background: linear-gradient(45deg, #42a5f5, #1e88e5);
     color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: 0.8em;
+    transition: background 0.3s ease;
+    margin-left: auto;
+    order: 6;  
+}
+/* Submit Button */
+#submit-cities {
+    display: inline-block;
+    line-height: 0px;
+    padding: 6px 12px;
+    background: linear-gradient(45deg, #42a5f5, #1e88e5);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8em;
     transition: background 0.3s ease;
 }
 

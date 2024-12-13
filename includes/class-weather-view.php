@@ -18,10 +18,10 @@ class Weather_View
         // Search form for cities
         $output = '<div class="weather-container1">
                 <p>You can customize the list of cities up to maximum of 5 cities<p/>
-                <input type="text" id="weather-search" placeholder="Search cities...">
+                <div class="input-container"><input type="text" id="weather-search" placeholder="Search cities..."><button id="submit-cities">Apply</button></div>
                 <div id="search-results"></div>
                 <div id="selected-cities"></div>
-                <button id="submit-cities">Apply</button>
+                
             </div>
             <div id="loading-indicator" style="display:none;">
                 <p>Loading...</p>

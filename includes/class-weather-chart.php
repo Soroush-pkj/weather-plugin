@@ -19,7 +19,7 @@ class Weather_Chart {
         ob_start();
         ?>
         <div id="weather-chart-container">
-            <canvas id="weather-chart" width="400" height="200"></canvas>
+            <canvas id="weather-chart" width="800" height="400"></canvas>
         </div>
         <script>
         document.addEventListener('DOMContentLoaded', function () {
