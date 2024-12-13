@@ -1,29 +1,38 @@
 <?php
 
 class Weather_Cache {
-    // کلید کش
+    // Prefix for cache keys
     private $transient_key_prefix = 'weather_data_';
 
-    // دریافت داده‌های کش شده
-    public function get_cached_weather_data( $city_name ) {
-        // بررسی کش
-        $transient_key = $this->transient_key_prefix . sanitize_title( $city_name );
-        $cached_data = get_transient( $transient_key );
-
-        // اگر داده کش شده وجود داشت، آن را برمی‌گردانیم
-        if ( false !== $cached_data ) {
-            return $cached_data;
-        }
-
-        // اگر کش وجود نداشت، داده‌ها را از API بارگذاری می‌کنیم
-        return false;
+    /**
+     * Generate a cache key based on city and units
+     *
+     * @param string $city_name The city name.
+     * @param string $units The units (metric or imperial).
+     * @return string A unique cache key.
+     */
+    public function get_cache_key($city_name, $units) {
+        return $this->transient_key_prefix . sanitize_title($city_name) . '_' . $units;
     }
 
-    // ذخیره داده‌ها در کش
-    public function set_weather_data_to_cache( $city_name, $weather_data ) {
-        $transient_key = $this->transient_key_prefix . sanitize_title( $city_name );
+    /**
+     * Get cached weather data
+     *
+     * @param string $cache_key The cache key.
+     * @return array|bool Cached data on success, false on failure.
+     */
+    public function get_cached_weather_data($cache_key) {
+        return get_transient($cache_key);
+    }
 
-        // ذخیره داده‌ها در کش برای مدت 15 دقیقه (900 ثانیه)
-        set_transient( $transient_key, $weather_data, 900 );
+    /**
+     * Store weather data in cache
+     *
+     * @param string $cache_key The cache key.
+     * @param array $weather_data The data to cache.
+     */
+    public function set_weather_data_to_cache($cache_key, $weather_data) {
+        // Store data in cache for 15 minutes (900 seconds)
+        set_transient($cache_key, $weather_data, 900);
     }
 }

@@ -28,7 +28,7 @@ class Weather_View
         }
 
         // Search form for cities
-        $output = '<div class="weather-search-container">
+        $output = '<div class="weather-container1">
                 <input type="text" id="weather-search" placeholder="Search cities...">
                 <div id="search-results"></div>
                 <div id="selected-cities"></div>
@@ -43,17 +43,17 @@ class Weather_View
         $browser_language = $this->weather_api->get_browser_language();
         $is_metric = ($browser_language == 'fa');
         $unit_symbol = $is_metric ? '°C' : '°F';
-        echo var_dump($browser_language);
+        // echo var_dump($browser_language);
 
         // Fetch weather data for each city
         foreach ($cities as $city) {
             $weather_data = $this->weather_api->get_weather_data($city);
-
+            
             if ($weather_data) {
                 $output .= '<div class="weather-city">';
                 $output .= '<h3>' . esc_html($weather_data['city']) . '</h3>';
                 $output .= '<img src="' . esc_url($weather_data['icon']) . '" alt="Weather icon">';
-                $output .= '<p>Temp: ' . esc_html($weather_data['temp']) . 'ffff</p>';
+                $output .= '<p>Temp: ' . esc_html($weather_data['temp']) . '</p>';
                 $output .= '<p>' . esc_html($weather_data['description']) . '</p>';
                 $output .= '</div>';
             }

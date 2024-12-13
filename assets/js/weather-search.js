@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingIndicator = document.querySelector('#loading-indicator'); // یک عنصر بارگذاری (Spinner)
 
     let selectedCities = [];
+    let unitSymbol = getUnitSymbol(); // دریافت علامت دما بر اساس زبان مرورگر
 
     // مخفی کردن کانتینر وضعیت هوا و نشان دادن اسپینر بارگذاری
     weatherContainer.style.display = 'none';
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             cityDiv.innerHTML = `
                                 <h3>${city.city}</h3>
                                 <img src="${city.icon}" alt="Weather icon">
-                                <p>Temperature: ${city.temp}°C</p>
+                                <p>Temperature: ${city.temp}${unitSymbol}</p>
                                 <p>${city.description}</p>
                             `;
                             weatherContainer.appendChild(cityDiv);
@@ -124,6 +125,12 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Please select at least one city.');
         }
     });
+
+    // تابع برای دریافت علامت دما بر اساس زبان مرورگر
+    function getUnitSymbol() {
+        const browserLanguage = navigator.language || navigator.userLanguage;
+        return browserLanguage.startsWith('fa') ? '°C' : '°F';
+    }
 
     // یک تابع برای دریافت وضعیت هوا برای شهرهای انتخاب‌شده
     function fetchWeatherDataForCities(cities) {
@@ -149,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         cityDiv.innerHTML = `
                             <h3>${city.city}</h3>
                             <img src="${city.icon}" alt="Weather icon">
-                            <p>Temperature: ${city.temp}°C</p>
+                            <p>Temperature: ${city.temp}${unitSymbol}</p>
                             <p>${city.description}</p>
                         `;
                         weatherContainer.appendChild(cityDiv);
@@ -163,5 +170,3 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(() => alert('Failed to fetch weather data. Please try again.'));
     }
 });
-
-

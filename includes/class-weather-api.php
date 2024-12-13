@@ -25,18 +25,20 @@ class Weather_API {
      * @return array|bool Weather data on success, false on failure.
      */
     public function get_weather_data($city_name) {
-        // Check if the data is cached
-        $cached_data = $this->weather_cache->get_cached_weather_data($city_name);
-
-        if (false !== $cached_data) {
-            return $cached_data;
-        }
-
         // Detect the user's browser language
         $language = $this->get_browser_language();
 
         // Determine the units parameter based on language
         $units = ($language === 'fa') ? 'metric' : 'imperial';
+
+        // Generate a cache key that includes the city and units
+        $cache_key = $this->weather_cache->get_cache_key($city_name, $units);
+
+        // Check if the data is cached
+        $cached_data = $this->weather_cache->get_cached_weather_data($cache_key);
+        if (false !== $cached_data) {
+            return $cached_data;
+        }
 
         // API request
         $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
@@ -59,7 +61,7 @@ class Weather_API {
             ];
 
             // Cache the data
-            $this->weather_cache->set_weather_data_to_cache($city_name, $weather_data);
+            $this->weather_cache->set_weather_data_to_cache($cache_key, $weather_data);
 
             return $weather_data;
         }
