@@ -28,6 +28,7 @@ if ( ! class_exists( 'Weather_Cron' ) ) {
 
 }
 
+
 function weather_plugin_enqueue_assets() {
     // Enqueue CSS
     wp_enqueue_style( 'weather-style', plugin_dir_url( __FILE__ ) . 'assets/css/weather-style.css' );
@@ -52,13 +53,10 @@ add_shortcode( 'weather', 'weather_plugin_register_shortcode' );
 
 // Add AJAX handler for selected cities
 function weather_update_cities() {
-    // دریافت شهرهای انتخابی از درخواست POST
+    
     $selected_cities = isset( $_POST['selected_cities'] ) ? json_decode( sanitize_text_field( wp_unslash( $_POST['selected_cities'] ) ), true ) : [];
     
-    // اگر هیچ شهری انتخاب نشده باشد، از شهرهای پیش‌فرض استفاده می‌کنیم
-    // if ( empty( $selected_cities ) ) {
-    //     $selected_cities = ['Tehran', 'New York', 'Sydney'];
-    // }
+    
 
     $weather_api = new Weather_API();
     $new_weather_data = [];
