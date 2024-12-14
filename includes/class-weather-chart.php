@@ -9,7 +9,7 @@ class Weather_Chart {
         add_action('wp_enqueue_scripts', [ $this, 'enqueue_chart_assets' ]);
     }
 
-    // Enqueue Chart.js library
+    
     public function enqueue_chart_assets() {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], null, true);
     }
@@ -61,11 +61,10 @@ class Weather_Chart {
                             }
                         });
 
-                        // Limit to the last 5 days
                         const limitedTemperatures = temperatures.slice(0, 5);
                         const limitedLabels = labels.slice(0, 5);
 
-                        // Destroy existing chart instance if it exists
+                        
                         if (chartInstance) {
                             chartInstance.destroy();
                         }
@@ -150,7 +149,7 @@ class Weather_Chart {
                 });
             }
 
-            // Initialize the chart on page load
+            
             initializeChart();
         });
         </script>
@@ -160,5 +159,5 @@ class Weather_Chart {
     }
 }
 
-// Instantiate the Weather_Chart class
+
 new Weather_Chart();

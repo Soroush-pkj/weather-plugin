@@ -4,7 +4,6 @@ class Weather_View
 {
     private $weather_api;
 
-    // Constructor accepting the Weather_API class
     public function __construct(Weather_API $weather_api)
     {
         $this->weather_api = $weather_api;
@@ -14,8 +13,6 @@ class Weather_View
     public function get_weather_shortcode()
     {
 
-
-        // Search form for cities
         $output = '<div class="weather-container1">
                 <p>You can customize the list of cities up to maximum of 5 cities<p/>
                 <div class="input-container"><input type="text" id="weather-search" placeholder="Search cities..."><button id="submit-cities">Apply</button></div>

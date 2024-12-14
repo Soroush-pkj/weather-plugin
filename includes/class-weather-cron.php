@@ -10,14 +10,13 @@ class Weather_Cron {
             wp_schedule_event( time(), 'three_hours', 'weather_cache_flush_event' );
         }
 
-        // Hook into the cron event to execute the cache flush
+        
         add_action( 'weather_cache_flush_event', [ $this, 'flush_weather_cache' ] );
 
         // Add custom interval to WP Cron
         add_filter( 'cron_schedules', [ $this, 'add_three_hours_interval' ] );
     }
 
-    // Define a custom interval for 3 hours
     public function add_three_hours_interval( $schedules ) {
         $schedules['three_hours'] = [
             'interval' => 10800, // 3 hours in seconds
@@ -26,7 +25,7 @@ class Weather_Cron {
         return $schedules;
     }
 
-    // Flush weather cache by removing all transients with the prefix
+    
     public function flush_weather_cache() {
         global $wpdb;
 
@@ -45,7 +44,6 @@ class Weather_Cron {
         }
     }
 
-    // Clear the scheduled event upon plugin deactivation
     public static function deactivate() {
         $timestamp = wp_next_scheduled( 'weather_cache_flush_event' );
         if ( $timestamp ) {
@@ -54,8 +52,7 @@ class Weather_Cron {
     }
 }
 
-// Instantiate the class
+
 new Weather_Cron();
 
-// Hook into plugin deactivation to clear scheduled events
 register_deactivation_hook( __FILE__, [ 'Weather_Cron', 'deactivate' ] );

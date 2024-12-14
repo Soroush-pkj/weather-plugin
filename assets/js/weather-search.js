@@ -5,32 +5,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitButton = document.querySelector('#submit-cities');
     const weatherContainer = document.querySelector('.weather-container');
     const maxCities = 5;
-    const loadingIndicator = document.querySelector('#loading-indicator'); // یک عنصر بارگذاری (Spinner)
+    const loadingIndicator = document.querySelector('#loading-indicator'); 
 
     let selectedCities = [];
-    let unitSymbol = getUnitSymbol(); // دریافت علامت دما بر اساس زبان مرورگر
+    let unitSymbol = getUnitSymbol(); 
 
-    // مخفی کردن کانتینر وضعیت هوا و نشان دادن اسپینر بارگذاری
+    
     weatherContainer.style.display = 'none';
-    loadingIndicator.style.display = 'none'; // پنهان کردن اسپینر در ابتدا
+    loadingIndicator.style.display = 'none'; 
 
-    // پاک کردن نمایش شهرهای انتخاب‌شده قبلی از صفحه
+    
     selectedCitiesContainer.innerHTML = '';
 
-    // چک کردن لوکال استوریج برای شهرهای انتخاب‌شده
+    
     if (localStorage.getItem('selected-cities')) {
         selectedCities = JSON.parse(localStorage.getItem('selected-cities'));
 
-        // بارگذاری وضعیت هوا برای شهرهای ذخیره‌شده
+        
         fetchWeatherDataForCities(selectedCities);
 
-        // نمایش دکمه پاکسازی
+        // clear button
         const clearButton = document.createElement('button');
         clearButton.id = 'clear-localstorage';
         clearButton.textContent = 'Clear';
         selectedCitiesContainer.appendChild(clearButton);
 
-        // رویداد کلیک برای دکمه پاکسازی
+        
         clearButton.addEventListener('click', () => {
             localStorage.clear();
             selectedCities = [];
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
             searchInput.style.backgroundColor = '';
         });
 
-        // نمایش شهرهای ذخیره‌شده در رابط کاربری
+        // show cities
         selectedCities.forEach(city => {
             const selectedCity = document.createElement('div');
             selectedCity.textContent = city;
@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedCitiesContainer.appendChild(selectedCity);
         });
     } else {
-        // اگر هیچ اطلاعاتی در لوکال استوریج نبود، از شهرهای پیش‌فرض استفاده کن
+    
         fetchWeatherDataForCities(['Tehran', 'New York', 'Sydney']);
     }
 
-    // جستجوی شهرها از API
+    // Search API
     searchInput.addEventListener('input', function () {
         const query = searchInput.value.trim();
 
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     data.list.forEach(city => {
                         const cityName = `${city.name}, ${city.sys.country}`;
 
-                        // چک کردن اینکه آیا شهر قبلاً انتخاب شده است
+                        // select already exist
                         if (selectedCities.includes(cityName)) {
                             return;
                         }
@@ -119,24 +119,24 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // بستن نتایج جستجو با کلیک بیرون از input
+    // close result box by ckick other area
     document.addEventListener('click', function (e) {
         if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
             resultsContainer.style.display = 'none';
         }
     });
 
-    // ارسال شهرهای انتخاب‌شده به سرور و ذخیره در لوکال استوریج
+    // send city to server
     submitButton.addEventListener('click', function (e) {
         e.preventDefault();
 
         if (selectedCities.length > 0) {
-            loadingIndicator.style.display = 'block'; // نشان دادن اسپینر
+            loadingIndicator.style.display = 'block'; 
 
-            // ذخیره اطلاعات در localStorage
+           
             localStorage.setItem('selected-cities', JSON.stringify(selectedCities));
 
-            // ارسال داده‌ها به سرور
+            // send to server
             fetch(weatherSearch.ajax_url, {
                 method: 'POST',
                 headers: {
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success && data.data) {
                         const newCities = data.data;
-                        weatherContainer.innerHTML = ''; // پاک کردن نتایج قبلی
+                        weatherContainer.innerHTML = ''; 
 
                         newCities.forEach(city => {
                             const cityDiv = document.createElement('div');
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             weatherContainer.appendChild(cityDiv);
                         });
 
-                        // مخفی کردن اسپینر و نمایش اطلاعات وضعیت هوا
+                        
                         loadingIndicator.style.display = 'none';
                         weatherContainer.style.display = 'flex';
                     } else {
@@ -176,22 +176,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => {
                     console.error('Error fetching weather data:', error);
                     alert('Failed to fetch weather data. Please try again.');
-                    loadingIndicator.style.display = 'none'; // پنهان کردن اسپینر در صورت خطا
+                    loadingIndicator.style.display = 'none'; 
                 });
         } else {
             alert('Please select at least one city.');
         }
     });
 
-    // تابع برای دریافت علامت دما بر اساس زبان مرورگر
+    
     function getUnitSymbol() {
         const browserLanguage = navigator.language || navigator.userLanguage;
         return browserLanguage.startsWith('fa') ? '°C' : '°F';
     }
 
-    // یک تابع برای دریافت وضعیت هوا برای شهرهای انتخاب‌شده
+    
     function fetchWeatherDataForCities(cities) {
-        loadingIndicator.style.display = 'block'; // نشان دادن اسپینر هنگام بارگذاری داده‌ها
+        loadingIndicator.style.display = 'block'; 
 
         fetch(weatherSearch.ajax_url, {
             method: 'POST',
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.data) {
-                    weatherContainer.innerHTML = ''; // پاک کردن نتایج قبلی
+                    weatherContainer.innerHTML = ''; 
 
                     data.data.forEach(city => {
                         const cityDiv = document.createElement('div');
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         weatherContainer.appendChild(cityDiv);
                     });
 
-                    // مخفی کردن اسپینر و نمایش اطلاعات وضعیت هوا
+                    
                     loadingIndicator.style.display = 'none';
                     weatherContainer.style.display = 'flex';
                 } else {
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error fetching weather data:', error);
                 alert('Failed to fetch weather data. Please try again.');
 
-                loadingIndicator.style.display = 'none'; // پنهان کردن اسپینر در صورت خطا
+                loadingIndicator.style.display = 'none'; 
             });
     }
 });

@@ -27,6 +27,9 @@ body {
     justify-content: center;
     flex-wrap: wrap;
 }
+#loading-indicator > p{
+    text-align: center;
+}
 
 .weather-city {
     text-align: center;
