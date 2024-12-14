@@ -74,8 +74,6 @@ function weather_update_cities() {
         wp_send_json_error( 'No weather data found for selected cities.' );
     }
 }
-
-
 add_action( 'wp_ajax_weather_update_cities', 'weather_update_cities' );
 add_action( 'wp_ajax_nopriv_weather_update_cities', 'weather_update_cities' );
 
