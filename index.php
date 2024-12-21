@@ -10,30 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Include necessary classes
-if ( ! class_exists( 'Weather_API' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-api.php';
-}
-if ( ! class_exists( 'Weather_Chart' ) ) {
     require_once plugin_dir_path(__FILE__) . 'includes/class-weather-chart.php';
-}
-if ( ! class_exists( 'Weather_Cache' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-cache.php';
-}
-if ( ! class_exists( 'Weather_View' ) ) {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-weather-view.php';
-}
-if ( ! class_exists( 'Weather_Cron' ) ) {
     require_once plugin_dir_path(__FILE__) . 'includes/class-weather-cron.php';
 
-}
 
 
 function weather_plugin_enqueue_assets() {
-    // Enqueue CSS
     wp_enqueue_style( 'weather-style', plugin_dir_url( __FILE__ ) . 'assets/css/weather-style.css' );
-
-    // Enqueue JS
     wp_enqueue_script( 'weather-search', plugin_dir_url( __FILE__ ) . 'assets/js/weather-search.js', [ 'jquery' ], null, true );
 
     // Localize script for AJAX URL
@@ -42,6 +28,7 @@ function weather_plugin_enqueue_assets() {
     ] );
 }
 add_action( 'wp_enqueue_scripts', 'weather_plugin_enqueue_assets' );
+
 
 // Register the [weather] shortcode
 function weather_plugin_register_shortcode() {

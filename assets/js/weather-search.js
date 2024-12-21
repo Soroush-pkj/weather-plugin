@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selectedCities.length > 0) {
             loadingIndicator.style.display = 'block'; 
 
-           
             localStorage.setItem('selected-cities', JSON.stringify(selectedCities));
 
             // send to server
