@@ -22,7 +22,7 @@ class Weather_Chart {
             <canvas id="weather-chart" width="800" height="400"></canvas>
         </div>
         <script>
-        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function () {
             const apiKey = '<?php echo $this->api_key; ?>';
             let chartInstance = null;
 
