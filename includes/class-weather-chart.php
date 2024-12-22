@@ -21,7 +21,7 @@ class Weather_Chart {
         <div id="weather-chart-container">
             <canvas id="weather-chart" width="800" height="400"></canvas>
         </div>
-        <script>
+        <!-- <script>
             document.addEventListener('DOMContentLoaded', function () {
             const apiKey = '<?php echo $this->api_key; ?>';
             let chartInstance = null;
@@ -152,7 +152,7 @@ class Weather_Chart {
             
             initializeChart();
         });
-        </script>
+        </script> -->
 
         <?php
         return ob_get_clean();
