@@ -2,6 +2,7 @@
 
 class Weather_API {
     private $weather_cache;
+    private static $api_key = '4503f87f2a76fb1b5c028df33323cf5c'; 
 
     public function __construct() {
         $this->weather_cache = new Weather_Cache();
@@ -16,7 +17,6 @@ class Weather_API {
         $language = $this->get_browser_language();
         $units = ($language === 'fa') ? 'metric' : 'imperial';
 
-        // Generate a cache key that includes the city and units
         $cache_key = $this->weather_cache->get_cache_key($city_name, $units);
 
         // Check if the data is cached
@@ -25,8 +25,7 @@ class Weather_API {
             return $cached_data;
         }
 
-        $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
-        $url = 'https://api.openweathermap.org/data/2.5/weather?q=' . urlencode($city_name) . '&appid=' . $api_key . '&units=' . $units;
+        $url = 'https://api.openweathermap.org/data/2.5/weather?q=' . urlencode($city_name) . '&appid=' . self::$api_key . '&units=' . $units;
 
         $response = wp_remote_get($url);
         if (is_wp_error($response)) {
@@ -54,26 +53,19 @@ class Weather_API {
     }
 
     public function get_5days_temp($city_name) {
-        // دریافت زبان مرورگر
         $language = $this->get_browser_language();
-
-        // تنظیم واحدها بر اساس زبان مرورگر
         $units = ($language === 'fa') ? 'metric' : 'imperial';
 
-        // کلید کش برای درخواست ۵ روز
         $cache_key = $this->weather_cache->get_cache_key($city_name . '_5days', $units);
 
-        // بررسی کش
+        // Check the cache
         $cached_data = $this->weather_cache->get_cached_weather_data($cache_key);
         if (false !== $cached_data) {
             return $cached_data;
         }
 
-        // کلید API و ساخت URL
-        $api_key = '4503f87f2a76fb1b5c028df33323cf5c';
-        $url = 'https://api.openweathermap.org/data/2.5/forecast?q=' . urlencode($city_name) . '&cnt=5&appid=' . $api_key . '&units=' . $units;
+        $url = 'https://api.openweathermap.org/data/2.5/forecast?q=' . urlencode($city_name) . '&appid=' . self::$api_key . '&units=' . $units;
 
-        // ارسال درخواست به API
         $response = wp_remote_get($url);
         if (is_wp_error($response)) {
             return false;
@@ -81,19 +73,37 @@ class Weather_API {
 
         $data = json_decode(wp_remote_retrieve_body($response), true);
 
-        // بررسی صحت داده‌ها
-        if (!isset($data['list']) || count($data['list']) < 5) {
+        if (!isset($data['list']) || count($data['list']) < 1) {
             return false;
         }
 
-        // استخراج دماهای پنج‌روزه
-        $temps = array_map(function ($entry) {
-            return $entry['main']['temp'];
-        }, $data['list']);
+        
+        $daily_temps = [];
+        foreach ($data['list'] as $entry) {
+            $date = explode(' ', $entry['dt_txt'])[0];
+            $time = explode(' ', $entry['dt_txt'])[1];
 
-        // ذخیره در کش
-        $this->weather_cache->set_weather_data_to_cache($cache_key, $temps);
+            if ($time === '12:00:00' && !isset($daily_temps[$date])) {
+                $daily_temps[$date] = [
+                    'date' => $date,
+                    'temp' => $entry['main']['temp'],
+                ];
+            }
+        }
 
-        return $temps;
+        if (count($daily_temps) < 5) {
+            return false;
+        }
+
+        $temps_with_dates = array_values(array_slice($daily_temps, 0, 5));
+
+        $result = [
+            'city'  => $data['city']['name'],
+            'temps' => $temps_with_dates,
+        ];
+
+        $this->weather_cache->set_weather_data_to_cache($cache_key, $result);
+
+        return $result;
     }
 }

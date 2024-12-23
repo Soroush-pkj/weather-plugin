@@ -37,7 +37,7 @@ class Weather_Cron {
             )
         );
 
-        // Loop through the results and delete each transient
+        
         foreach ( $transients as $transient ) {
             $key = str_replace( '_transient_', '', $transient->option_name );
             delete_transient( $key );

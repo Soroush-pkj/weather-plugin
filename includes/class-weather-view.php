@@ -6,7 +6,6 @@ class Weather_View {
     public function __construct(Weather_API $weather_api) {
         $this->weather_api = $weather_api;
 
-        // ثبت اکشن برای enqueue assets
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets']);
         add_shortcode('weather', [$this, 'get_weather_shortcode']);
     }
@@ -44,38 +43,40 @@ class Weather_View {
     }
 
     public function update_cities() {
-        // دریافت شهرهای انتخاب‌شده از درخواست AJAX
+        
         $selected_cities = isset($_POST['selected_cities']) ? json_decode(sanitize_text_field(wp_unslash($_POST['selected_cities'])), true) : [];
-
+    
         $response_data = [
             'success' => true,
             'data'    => [],
         ];
-
+    
+        
         foreach ($selected_cities as $city) {
             $weather_data = $this->weather_api->get_weather_data($city);
             if ($weather_data) {
                 $response_data['data'][] = $weather_data;
             }
         }
-
-        // افزودن داده‌های پیش‌بینی ۵ روزه برای اولین شهر
+    
+        
         if (!empty($selected_cities)) {
             $forecast_data = $this->weather_api->get_5days_temp($selected_cities[0]);
             if ($forecast_data) {
                 $response_data['forecast'] = [
-                    'cod'     => '200',
-                    'message' => 0,
-                    'cnt'     => count($forecast_data),
-                    'list'    => $forecast_data,
+                    'city' => $forecast_data['city'], 
+                    'temps' => $forecast_data['temps'], 
                 ];
             }
         }
-
+    
+        
         if (!empty($response_data['data'])) {
             wp_send_json($response_data);
         } else {
             wp_send_json_error('No weather data found for selected cities.');
         }
     }
+    
+    
 }

@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const weatherContainer = document.querySelector(".weather-container");
     const maxCities = 5;
     const loadingIndicator = document.querySelector("#loading-indicator");
-    const weatherChartCanvas = document.getElementById("weather-chart"); // کانواس برای چارت
+    const weatherChartCanvas = document.getElementById("weather-chart");
   
     let selectedCities = [];
     let unitSymbol = getUnitSymbol();
+    let weatherChartInstance;
   
     weatherContainer.style.display = "none";
     loadingIndicator.style.display = "none";
-  
     selectedCitiesContainer.innerHTML = "";
   
     if (localStorage.getItem("selected-cities")) {
@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
               });
   
               resultsContainer.appendChild(cityItem);
+            //   ------------
             });
           } else {
             resultsContainer.innerHTML = '<p class="info">No Result</p>';
@@ -112,7 +113,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   
     document.addEventListener("click", function (e) {
-      if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+      if (
+        !searchInput.contains(e.target) &&
+        !resultsContainer.contains(e.target)
+      ) {
         resultsContainer.style.display = "none";
       }
     });
@@ -146,15 +150,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 cityDiv.classList.add("weather-city");
   
                 cityDiv.innerHTML = `
-                  <h3>${city.city}</h3>
-                  <img src="${city.icon}" alt="Weather icon">
-                  <p>Temperature: ${city.temp}${unitSymbol}</p>
-                  <p>${city.description}</p>
-                `;
+                    <h3>${city.city}</h3>
+                    <img src="${city.icon}" alt="Weather icon">
+                    <p>Temperature: ${city.temp}${unitSymbol}</p>
+                    <p>${city.description}</p>
+                  `;
                 weatherContainer.appendChild(cityDiv);
   
-                // اضافه کردن دماهای ۵ روز آینده به نمودار
-                updateWeatherChart(data.forecast.list);
+                updateWeatherChart(data.forecast);
               });
   
               loadingIndicator.style.display = "none";
@@ -201,17 +204,15 @@ document.addEventListener("DOMContentLoaded", function () {
               cityDiv.classList.add("weather-city");
   
               cityDiv.innerHTML = `
-                <h3>${city.city}</h3>
-                <img src="${city.icon}" alt="Weather icon">
-                <p>Temperature: ${city.temp}${unitSymbol}</p>
-                <p>${city.description}</p>
-              `;
+                  <h3>${city.city}</h3>
+                  <img src="${city.icon}" alt="Weather icon">
+                  <p>Temperature: ${city.temp}${unitSymbol}</p>
+                  <p>${city.description}</p>
+                `;
               weatherContainer.appendChild(cityDiv);
             });
   
-            // اضافه کردن دماهای ۵ روز آینده به نمودار
-            updateWeatherChart(data.forecast.list);
-  
+            updateWeatherChart(data.forecast);
             loadingIndicator.style.display = "none";
             weatherContainer.style.display = "flex";
           } else {
@@ -224,55 +225,46 @@ document.addEventListener("DOMContentLoaded", function () {
           loadingIndicator.style.display = "none";
         });
     }
-    let weatherChartInstance; // نگهداری نمونه چارت
-
-    // Function to update the weather chart with forecast data
-    function updateWeatherChart(temperatureData) {
-        const ctx = weatherChartCanvas.getContext("2d");
-      
-        // اگر چارت قبلی وجود دارد، آن را از بین ببریم
-        if (weatherChartInstance) {
-          weatherChartInstance.destroy();
-        }
-      
-        // ایجاد نمودار جدید
-        weatherChartInstance = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"], // 5 days forecast
-            datasets: [
-              {
-                label: "Temperature (°C)",
-                data: temperatureData, // استفاده از دماهای list برای ۵ روز آینده
-                borderColor: "rgba(75, 192, 192, 1)",
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: false,
-              },
+  
+    function updateWeatherChart(forecast) {
+      const ctx = weatherChartCanvas.getContext("2d");
+  
+      if (weatherChartInstance) {
+        weatherChartInstance.destroy();
+      }
+  
+      const labels = forecast.temps.map((item) => item.date);
+      const temperatures = forecast.temps.map((item) => item.temp);
+  
+      weatherChartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: `Temperature (${unitSymbol})`,
+              data: temperatures,
+              borderColor: "rgba(75, 192, 192, 1)",
+              backgroundColor: "rgba(75, 192, 192, 0.2)",
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Weather Forecast for ${forecast.city}`,
             },
           },
-        });
-      }
+          scales: {
+            y: {
+              beginAtZero: false,
+            },
+          },
+        },
+      });
+    }
   });
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-

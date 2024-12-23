@@ -219,7 +219,7 @@ body {
 /* Weather Chart Container */
 #weather-chart-container {
     margin: 20px auto;
-    padding: 20px;
+    padding: 36px;
     max-width: 1200px;
     background: #ffffff;
     border-radius: 12px;
@@ -267,4 +267,10 @@ body {
     height: 12px;
     background-color: rgba(75, 192, 192, 1);
     border-radius: 50%;
+}
+
+#weather-chart{
+    width: 100%!important;
+    height: 100%!important;
+    margin: 0 auto!important;
 }
